@@ -46,8 +46,10 @@ public class Client implements Cloneable {
     public Client(Long id, @NonNull String name, Address address, List<Phone> phones) {
         this.id = id;
         this.name = name;
-        this.address = address;
-        this.address.setClient(this);
+        if(address!=null){
+            this.address = address;
+            this.address.setClient(this);
+        }
         if(phones != null){
             for(Phone phone: phones){
                 this.addPhone(phone);
