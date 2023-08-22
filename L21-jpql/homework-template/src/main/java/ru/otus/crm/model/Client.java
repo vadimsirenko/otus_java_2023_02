@@ -4,9 +4,11 @@ package ru.otus.crm.model;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
@@ -37,24 +39,19 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "client_id", nullable=false, updatable = false)
     private List<Phone> phones = new ArrayList<>();
 
     public Client(Long id, @NonNull String name, Address address, List<Phone> phones) {
         this.id = id;
         this.name = name;
-        if(address!=null){
-            this.address = address;
-            this.address.setClient(this);
-        }
-        if(phones != null){
-            for(Phone phone: phones){
-                this.addPhone(phone);
-            }
-        }
+        this.address = address;
+        this.phones = phones;
     }
 
     public Client(String name) {
@@ -65,17 +62,6 @@ public class Client implements Cloneable {
     public Client(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.phones = new ArrayList<>();
-    }
-
-    public void addPhone(Phone phone) {
-        phones.add(phone);
-        phone.setClient(this);
-    }
-
-    public void removePhone(Phone phone) {
-        phones.remove(phone);
-        phone.setClient(null);
     }
 
     @Override
