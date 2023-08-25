@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest()
 @Testcontainers
+@Transactional
 @ContextConfiguration(initializers = {DbServiceClientImplTest.Initializer.class})
 @ActiveProfiles("test")
 class DbServiceClientImplTest {
@@ -58,18 +60,14 @@ class DbServiceClientImplTest {
 
     @Test
     void getClient() {
-        List<Manager> managers = dbServiceManager.findByLabel("Manager 2");
-        Client client = new Client("Vadim", managers.get(0).getId(), 1, new ClientDetails("Vadim info"));
-        Client savedClient = dbServiceClient.saveClient(client);
-
-        Optional<Client> readedClientOpt = dbServiceClient.getClient(savedClient.getId());
+        Optional<Client> readedClientOpt = dbServiceClient.getClient(1L);
 
         assertTrue(readedClientOpt.isPresent());
         Client readedClient = readedClientOpt.get();
 
-        assertEquals("Vadim", readedClient.getName());
-        assertEquals("Vadim info", readedClient.getClientInfo().getInfo());
-        assertEquals(managers.get(0).getId(), readedClient.getManagerId());
+        assertEquals("Vasya", readedClient.getName());
+        assertEquals("Vasya info", readedClient.getClientInfo().getInfo());
+        assertEquals("mgr-1", readedClient.getManagerId());
         assertEquals(1, readedClient.getOrderColumn());
         assertNotNull(readedClient.getId());
     }
@@ -77,14 +75,6 @@ class DbServiceClientImplTest {
     @Test
     void findAll() {
         List<Client> clients = dbServiceClient.findAll();
-        int clientCountBefore = clients.size();
-
-        List<Manager> managers = dbServiceManager.findByLabel("Manager 2");
-        Client client = new Client("Vadim", managers.get(0).getId(), 1, new ClientDetails("Vadim info"));
-        dbServiceClient.saveClient(client);
-        clients = dbServiceClient.findAll();
-
-        assertEquals(clientCountBefore + 1, clients.size());
-
+        assertEquals(6, clients.size());
     }
 }

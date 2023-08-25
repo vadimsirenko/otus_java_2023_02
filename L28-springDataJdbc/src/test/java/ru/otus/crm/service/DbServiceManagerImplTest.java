@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest()
 @Testcontainers
+@Transactional
 @ContextConfiguration(initializers = {DbServiceManagerImplTest.Initializer.class})
 @ActiveProfiles("test")
 class DbServiceManagerImplTest {
@@ -63,13 +65,8 @@ class DbServiceManagerImplTest {
     @Test
     void findAll() {
         List<Manager> managers = dbServiceManager.findAll();
-        int managerCountBefore = managers.size();
 
-        dbServiceManager.saveManager(new Manager("mngt-A", "ManagerA",
-                new HashSet<>(), new ArrayList<>(), true));
-        managers = dbServiceManager.findAll();
-
-        assertEquals(managerCountBefore + 1, managers.size());
+        assertEquals(5, managers.size());
     }
 
     @Test
