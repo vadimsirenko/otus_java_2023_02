@@ -3,6 +3,7 @@ package ru.otus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import ru.otus.crm.model.Client;
 import ru.otus.crm.model.ClientDetails;
@@ -20,6 +21,7 @@ import java.util.Set;
 
 
 @Component("actionDemo")
+@Profile("!test")
 public class ActionDemo implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(ActionDemo.class);
 
