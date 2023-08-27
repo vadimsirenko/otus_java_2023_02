@@ -1,6 +1,7 @@
 package ru.otus.crm.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -8,6 +9,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -25,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest()
 @Testcontainers
 @Transactional
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(initializers = {DbServiceManagerImplTest.Initializer.class})
 @ActiveProfiles("test")
 class DbServiceManagerImplTest {
@@ -65,8 +68,7 @@ class DbServiceManagerImplTest {
     @Test
     void findAll() {
         List<Manager> managers = dbServiceManager.findAll();
-
-        assertEquals(5, managers.size());
+        assertEquals(3, managers.size());
     }
 
     @Test
@@ -77,5 +79,10 @@ class DbServiceManagerImplTest {
         assertEquals("mgr-1", manager.getId());
         assertEquals("Manager 1", manager.getLabel());
         assertEquals(3, manager.getClients().size());
+    }
+    @Test
+    void findByWrongLabel() {
+        List<Manager> managers = dbServiceManager.findByLabel("Manager 1!");
+        assertEquals(0, managers.size());
     }
 }

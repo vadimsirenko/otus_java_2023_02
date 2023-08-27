@@ -1,6 +1,7 @@
 package ru.otus.crm.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -8,6 +9,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -24,12 +26,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest()
 @Testcontainers
 @Transactional
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(initializers = {DbServiceClientImplTest.Initializer.class})
 @ActiveProfiles("test")
 class DbServiceClientImplTest {
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13");
-
     @Autowired
     DBServiceClient dbServiceClient;
     @Autowired
@@ -75,6 +77,6 @@ class DbServiceClientImplTest {
     @Test
     void findAll() {
         List<Client> clients = dbServiceClient.findAll();
-        assertEquals(6, clients.size());
+        assertEquals(4, clients.size());
     }
 }
